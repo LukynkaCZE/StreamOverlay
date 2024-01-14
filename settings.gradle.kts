@@ -1,1 +1,1 @@
-rootProject.name = "cz.lukynka.streamoverlay"
+rootProject.name = "StreamOverlay"

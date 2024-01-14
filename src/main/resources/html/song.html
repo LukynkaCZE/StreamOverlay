@@ -1,0 +1,383 @@
+<!-- DO NOT LOOK HERE THIS IS THE WORST MISTAKE YOU CAN DO THIS FILE IS MESS -->
+<!-- I will redo this entire file when im not lazy (never) -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Overlay - Currently Playing</title>
+    <script src="https://unpkg.com/color.js@1.2.0/dist/color.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+</head>
+<body id="body">
+
+
+<div class="progress-container" id="progress-container">
+    <div class="progress-background">
+        <div id="progres" class="progress"></div>
+    </div>
+</div>
+
+<div id="pausedIcon" class="pop-out">
+    <p class="pausedIcon">PAUSED</p>
+</div>
+<div id="container">
+    <div class="background" id="background">
+        <div class="vertical-center">
+            <div class="left">
+                <div style="padding-top: 20px;">
+                    <div class="name">
+                        <span id="name"></span>
+                    </div>
+                    <div class="artist">
+                        <p id="artist"></p>
+                    </div>
+                </div>
+            </div>
+            <div class="right">
+                <img src="" id="cover" class="right-img">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
+
+<style>
+
+.progress-container {
+    position: absolute;
+    z-index: 100;
+    padding-top: 150px;
+}
+
+.progress-background {
+    width: 608px;
+    height: 12px;
+    background-color: rgb(105, 70, 148);
+    border-radius: 0px 0px 500px 500px;
+}
+
+.progress {
+    height: 12px;
+    background-color: rgb(184, 125, 255);
+    transition: all 1s;
+    border-radius: 0px 0px 0px 50px;
+}
+
+
+</style>
+
+<script>
+var lastSong = ""
+var isPaused;
+var timeout = 0
+
+async function updateCurrentlyPlaying() {
+    const response = await fetch("http://{@HOST}:{@PORT}/api/spotify/currentSong")
+        .then((response) => response.json())
+        .then((data) => {
+            console.log(data)
+            var name = data.name
+            if (name.length > 15) {
+                name = name.slice(0, 15) + "..";
+            }
+
+            let bodyClasses = document.getElementById("body").classList;
+            let containerClasses = document.getElementById("container").classList;
+            let pausedOverlayClasses = document.getElementById("pausedIcon").classList
+
+            if (data.isEmpty) {
+                if(timeout == 2) {
+                    bodyClasses.remove("slide-left")
+                    bodyClasses.add("slide-right")
+                } else {
+                    timeout++;
+                }
+            } else {
+                timeout = 0
+                setBackground(data.image, data.currentMs, data.maxMs)
+                if (lastSong != name) {
+                    songChangeAnimation()
+                    lastSong = name
+                }
+
+                if(data.isPaused && !isPaused) {
+                    isPaused = true
+                    containerClasses.remove("playing")
+                    containerClasses.add("pausedd")
+                    pausedOverlayClasses.remove("pop-out")
+                    pausedOverlayClasses.add("pop-in")
+                    document.getElementById("progress-container").classList.remove("playing")
+                    document.getElementById("progress-container").classList.add("pausedd")
+                    console.log("Changing state to PAUSED")
+                }
+                if(!data.isPaused && isPaused) {
+                    isPaused = false
+                    containerClasses.remove("pausedd")
+                    containerClasses.add("playing")
+                    pausedOverlayClasses.remove("pop-in")
+                    pausedOverlayClasses.add("pop-out")
+                    document.getElementById("progress-container").classList.remove("pausedd")
+                    document.getElementById("progress-container").classList.add("playing")
+                    console.log("Changing state to PLAYING")
+                }
+
+                setTimeout(() => {
+                    document.getElementById("name").innerHTML = name
+                    document.getElementById("artist").innerHTML = `by ${data.artist}`
+                    document.getElementById("cover").src = data.image
+                }, 1000)
+
+                if (!bodyClasses.contains("slide-left")) {
+                    bodyClasses.remove("slide-right")
+                    bodyClasses.add("slide-left")
+                }
+            }
+        });
+}
+
+function songChangeAnimation() {
+    document.getElementById("name").classList.remove("type-out-in")
+    document.getElementById("artist").classList.remove("fade-out-in")
+    document.getElementById("cover").classList.remove("fade-out-in")
+    setTimeout(() => {
+        document.getElementById("name").classList.add("type-out-in")
+        document.getElementById("artist").classList.add("fade-out-in")
+        document.getElementById("cover").classList.add("fade-out-in")
+    }, 1)
+}
+
+function setBackground(image, part, max) {
+    var percentage = (part/max) * 100
+    document.getElementById("background").style.backgroundImage = `linear-gradient(to left, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.9)), url(${image})`
+    document.getElementById("progres").style.width = `${percentage}%`
+}
+
+
+Number.prototype.map = function (in_min, in_max, out_min, out_max) {
+  return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
+setInterval(function() {
+    updateCurrentlyPlaying()
+}, 2500);
+
+updateCurrentlyPlaying()
+
+</script>
+
+<style>
+
+    .pausedIcon {
+        color: white;
+        z-index: 10;
+        padding-left: 275px;
+        padding-top: 41px;
+        position: absolute;
+        font-size: 24px;
+     }
+    
+     body {
+         padding: 0px;
+         margin: 0px;
+         font-family: 'JetBrains Mono', monospace;
+         opacity: 0;
+    }
+     img {
+         float: right;
+         top: 80%;
+         transition: all 1s;
+    }
+     .background {
+         position: absolute;
+         width: 608px;
+         height: 150px;
+         background: rgba(255, 255, 255, 0.77);
+         border-radius: 20px 20px 0px 0px;
+         flex-direction: row;
+    }
+     .name {
+         width: 460px;
+         height: 52px;
+         font-family: 'JetBrains Mono';
+         font-style: normal;
+         font-weight: 700;
+         font-size: 40px;
+         line-height: 52px;
+         display: flex;
+         align-items: center;
+    }
+     .right-img{
+         width: 120px;
+         border-radius: 20px;
+    }
+     .artist {
+         position: absolute;
+         width: 460px;
+         height: 41px;
+         font-family: 'JetBrains Mono';
+         font-style: italic;
+         font-weight: 200;
+         font-size: 32px;
+         line-height: 42px;
+         display: flex;
+         align-items: center;
+         color: #000000;
+    }
+     .vertical-center {
+         margin: 0;
+         position: absolute;
+         top: 42%;
+         -ms-transform: translateY(-50%);
+         transform: translateY(-50%);
+    }
+     .left{
+         padding-top: 20px;
+         padding-left: 15px;
+    }
+     .right{
+         margin-top: -65px;
+         margin-right: -115px;
+    }
+     .slide-right {
+         -webkit-animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+     .slide-left {
+         -webkit-animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+     .type-out-in {
+         -webkit-animation: type-out-in 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
+         animation: type-out-in 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
+    }
+     .fade-out-in {
+         -webkit-animation: fade-out-in 2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: fade-out-in 2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+    /* pausedd because paused is css keyword and it fucks it up */
+    .pausedd {
+         -webkit-animation: pausedd 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: pausedd 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+    .playing {
+         -webkit-animation: playing 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: playing 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+    
+    .pop-in {
+         -webkit-animation: pop-in 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: pop-in 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+    
+    .pop-out {
+         -webkit-animation: pop-out 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: pop-out 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+    
+    @keyframes pop-in {
+         0% {
+             opacity: 0;
+             transform: translateX(-500px);
+        }
+         100% {
+             opacity: 1;
+             transform: translateX(0px);
+        }
+    }
+    
+    @keyframes pop-out {
+        0% {
+             opacity: 1;
+             transform: translateX(0px);
+        }
+         100% {
+            opacity: 0;
+            transform: translateX(500px);
+        }
+    }
+    
+    @keyframes pausedd {
+         0% {
+             opacity: 1;
+        }
+         100% {
+             opacity: 0.2;
+        }
+    }
+    
+    @keyframes playing {
+         0% {
+             opacity: 0.2;
+        }
+         100% {
+             opacity: 1;
+        }
+    }
+    
+     @keyframes type-out-in {
+         0% {
+             opacity: 1;
+             letter-spacing: 0px
+        }
+         50% {
+             opacity: 0;
+             letter-spacing: -24px
+        }
+         0% {
+             opacity: 1;
+             letter-spacing: 0px
+        }
+    }
+     @keyframes fade-out-in {
+         0% {
+             opacity: 1;
+        }
+         50% {
+             opacity: 0;
+        }
+         65% {
+             opacity: 0;
+        }
+         0% {
+             opacity: 1;
+        }
+    }
+     @-webkit-keyframes slide-right {
+         0% {
+             -webkit-transform: translateX(0);
+             transform: translateX(0);
+        }
+         100% {
+             -webkit-transform: translateX(500px);
+             transform: translateX(500px);
+        }
+    }
+     @keyframes slide-right {
+         0% {
+             -webkit-transform: translateX(0);
+             transform: translateX(0);
+             opacity: 1;
+        }
+         100% {
+             -webkit-transform: translateX(500px);
+             transform: translateX(500px);
+             opacity: 0;
+        }
+    }
+     @keyframes slide-left {
+         0% {
+             -webkit-transform: translateX(500px);
+             transform: translateX(500px);
+             opacity: 0;
+        }
+         100% {
+             -webkit-transform: translateX(0px);
+             transform: translateX(0px);
+             opacity: 1;
+        }
+    }
+    </style>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="./util.js"></script>
+</head>
+<body id="body">
+    <img src="./background_day.png" class="visible" id="day">
+    <img src="./background_sunset.png" class="hidden" id="sunset">
+    <img src="./background_night.png" class="hidden" id="night">
+    
+</body>
+</html>
+
+<style>
+
+body, html {
+  height: 100%;
+  margin: 0;
+}
+
+.visible {
+    opacity: 100%;
+    transition: 10s;
+}
+
+.hidden {
+    opacity: 0%;
+    transition: 10s;
+}
+
+img {
+    position: absolute;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+</style>
+
+<script>
+
+var DAY = document.getElementById("day") 
+var SUNSET = document.getElementById("sunset") 
+var NIGHT = document.getElementById("night") 
+
+function DayToSunset() {
+    DAY.classList.add("hidden")
+    DAY.classList.remove("visible")
+
+    SUNSET.classList.add("visible")
+    SUNSET.classList.remove("hidden")
+}
+
+function SunsetToNight() {
+    SUNSET.classList.add("hidden")
+    SUNSET.classList.remove("visible")
+
+    NIGHT.classList.add("visible")
+    NIGHT.classList.remove("hidden")
+}
+
+function updateState() {
+    if(CURRENT_TIME > GOLDEN_HOUR) {
+        DayToSunset()
+    }
+    if(CURRENT_TIME > SUNSET_TIME) {
+        SunsetToNight()
+    }
+}
+
+async function load() {
+    await updateWhenAPIReady().finally(() => {
+        updateState()
+    })
+}
+
+load()
+
+</script>

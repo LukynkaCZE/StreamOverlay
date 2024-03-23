@@ -10,6 +10,7 @@
     <title>Stream Overlay - Currently Playing</title>
     <script src="https://unpkg.com/color.js@1.2.0/dist/color.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <script src="./util.js"></script>
 </head>
 <body id="body">
 
@@ -67,7 +68,6 @@
     border-radius: 0px 0px 0px 50px;
 }
 
-
 </style>
 
 <script>
@@ -76,7 +76,7 @@ var isPaused;
 var timeout = 0
 
 async function updateCurrentlyPlaying() {
-    const response = await fetch("http://{@HOST}:{@PORT}/api/spotify/currentSong")
+    const response = await fetch("http://192.168.0.181:6969/api/spotify/currentSong")
         .then((response) => response.json())
         .then((data) => {
             console.log(data)
@@ -98,7 +98,8 @@ async function updateCurrentlyPlaying() {
                 }
             } else {
                 timeout = 0
-                setBackground(data.image, data.currentMs, data.maxMs)
+                updateThemeState()
+                // setBackground(data.image, data.currentMs, data.maxMs)
                 if (lastSong != name) {
                     songChangeAnimation()
                     lastSong = name
@@ -151,9 +152,23 @@ function songChangeAnimation() {
 }
 
 function setBackground(image, part, max) {
+    // document.getElementById("background").style.background = "rgba(255, 255, 255, 0.7)"
+
+    // Cover Background disabled for the new overlay
+
     var percentage = (part/max) * 100
     document.getElementById("background").style.backgroundImage = `linear-gradient(to left, rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0.9)), url(${image})`
-    // document.getElementById("progres").style.width = `${percentage}%`
+    document.getElementById("progres").style.width = `${percentage}%`
+}
+
+function updateThemeState() {
+    if(CURRENT_TIME > SUNSET_TIME) {
+        document.getElementById("background").style.background = "rgba(0, 0, 0, 0.7)"
+        document.getElementById("body").style.color = "rgba(255, 255, 255, 1)"
+    } else {
+        document.getElementById("background").style.background = "rgba(255, 255, 255, 1)"
+        document.getElementById("body").style.color = "rgba(0, 0, 0, 1)"
+    }
 }
 
 
@@ -167,6 +182,18 @@ setInterval(function() {
 
 updateCurrentlyPlaying()
 
+async function load() {
+    await updateWhenAPIReady().finally(() => {
+        updateThemeState()
+    })
+}
+
+setInterval(function() {
+    load()
+}, 300000);
+
+load()
+
 </script>
 
 <style>
@@ -179,7 +206,7 @@ updateCurrentlyPlaying()
         position: absolute;
         font-size: 24px;
      }
-
+    
      body {
          padding: 0px;
          margin: 0px;
@@ -225,7 +252,6 @@ updateCurrentlyPlaying()
          line-height: 42px;
          display: flex;
          align-items: center;
-         color: #000000;
     }
      .vertical-center {
          margin: 0;
@@ -380,4 +406,4 @@ updateCurrentlyPlaying()
              opacity: 1;
         }
     }
-    </style>
+</style>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task display</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="container" class="hideStart">
+        <div class="background" id="background">
+            <div class="vertical-center">
+                <p><span class="bold">Working on:</span> <span id="task"></span></p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script>
+
+
+var CONTAINER = document.getElementById("container")
+
+async function updateCurrectTask() {
+    const response = await fetch("http://localhost:6969/task")
+        .then((response) => response.text())
+        .then((data) => {
+            console.log(data)
+            if(data == "") {
+                //Hide the widget
+                CONTAINER.classList.remove("slide-left")
+                CONTAINER.classList.add("slide-right")
+            } else {
+                document.getElementById("task").innerHTML = data
+                CONTAINER.classList.remove("slide-right")
+                CONTAINER.classList.add("slide-left")
+                CONTAINER.classList.remove("hideStart")
+            }
+        })
+        .catch(() => {
+            CONTAINER.classList.remove("slide-left")
+            CONTAINER.classList.add("slide-right")
+        })
+}
+
+setInterval(function() {
+    updateCurrectTask()
+}, 1000);
+
+updateCurrectTask()
+
+</script>
+
+
+<style>
+
+.slide-right {
+     -webkit-animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+     animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+.slide-left {
+     -webkit-animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+     animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+}
+
+.hideStart {
+    opacity: 0;
+}
+
+@keyframes slide-right {
+     0% {
+         -webkit-transform: translateX(0);
+         transform: translateX(0);
+         opacity: 1;
+    }
+     100% {
+         -webkit-transform: translateX(500px);
+         transform: translateX(500px);
+         opacity: 0;
+    }
+}
+@keyframes slide-left {
+     0% {
+         -webkit-transform: translateX(500px);
+         transform: translateX(500px);
+         opacity: 0;
+    }
+     100% {
+         -webkit-transform: translateX(0px);
+         transform: translateX(0px);
+         opacity: 1;
+    }
+}
+
+.bold {
+    font-weight: 800;
+}
+
+body {
+    padding: 0px;
+    margin: 0px;
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-size: 24px;
+    color: black;
+}
+
+.background {
+    position: absolute;
+    width: 600px;
+    height: 50px;
+    background: rgba(255, 255, 255, 0.795);
+    border-radius: 15px;
+    text-align: center;
+}
+
+.vertical-center {
+    margin: 0;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    padding-top: 28px;
+}
+
+</style>

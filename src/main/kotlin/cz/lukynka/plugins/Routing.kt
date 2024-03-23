@@ -2,6 +2,7 @@ package cz.lukynka.plugins
 
 import cz.lukynka.HTML
 import cz.lukynka.routing.spotifyRoute
+import cz.lukynka.routing.taskRoute
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.plugins.statuspages.*
@@ -18,6 +19,7 @@ fun Application.configureRouting() {
     }
     routing {
         spotifyRoute()
+        taskRoute()
         get("/") {
             call.respondHTML(HTML.YAHAHA)
         }

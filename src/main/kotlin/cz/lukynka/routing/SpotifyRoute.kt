@@ -13,6 +13,8 @@ import util.Environment
 import util.HTMLReplacer
 import util.respondHTML
 
+var isOtographic = false
+
 fun Route.spotifyRoute() {
     get("/spotify/callback") {
         val code = call.request.queryParameters["code"].toString()
@@ -20,7 +22,21 @@ fun Route.spotifyRoute() {
         call.respondHTML(HTML.AUTO_CLOSE)
     }
 
+    get("/spotify/otographic") {
+        val bool = (call.request.queryParameters["enabled"] ?: "false").toBoolean()
+        isOtographic = bool
+    }
+
     get("/api/spotify/currentSong") {
+
+        if(isOtographic) {
+            call.respond(CurrentSongResponse("Otographic Arts", "Kenji Sekiguchi & Nhato", "https://thumbnailer.mixcloud.com/unsafe/390x390/extaudio/9/d/1/b/a849-e223-4c89-9697-b61b94b4dd3a", false,
+                isEmpty = false,
+                currentMs = 0,
+                maxMs = 0
+            ))
+            return@get
+        }
 
         if(!SpotifyAuth.authenticated) {
             call.respond(CurrentSongResponse("", "", "", isPaused = false, isEmpty = true, 0, 0))

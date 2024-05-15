@@ -47,13 +47,19 @@ var isPaused;
 var timeout = 0
 
 async function updateCurrentlyPlaying() {
-    const response = await fetch("http://192.168.0.181:6969/api/spotify/currentSong")
+    const response = await fetch("http://localhost:6969/api/spotify/currentSong")
         .then((response) => response.json())
         .then((data) => {
             console.log(data)
             var name = data.name
             if (name.length > 15) {
                 name = name.slice(0, 15) + "..";
+            }
+            
+            if(data.artist.length > 20) {
+                document.getElementById("artist").classList.add("artist-multiline")
+            } else {
+                document.getElementById("artist").classList.remove("artist-multiline")
             }
 
             let bodyClasses = document.getElementById("body").classList;
@@ -241,6 +247,11 @@ async function updateCurrectTask() {
          align-items: center;
          color: #000000;
     }
+
+    .artist-multiline {
+        padding-top: 35px;
+    }
+
      .vertical-center {
          margin: 0;
          position: absolute;

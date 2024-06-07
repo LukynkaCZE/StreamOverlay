@@ -3,6 +3,7 @@ package cz.lukynka.routing
 import LogType
 import cz.lukynka.HTML
 import cz.lukynka.spotify.SpotifyAuth
+import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -25,6 +26,8 @@ fun Route.spotifyRoute() {
     get("/spotify/otographic") {
         val bool = (call.request.queryParameters["enabled"] ?: "false").toBoolean()
         isOtographic = bool
+        call.response.status(HttpStatusCode.OK)
+        call.respond("")
     }
 
     get("/api/spotify/currentSong") {

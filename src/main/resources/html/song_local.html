@@ -1,6 +1,13 @@
 <!-- DO NOT LOOK HERE THIS IS THE WORST MISTAKE YOU CAN DO THIS FILE IS MESS -->
 <!-- I will redo this entire file when im not lazy (never) -->
 
+<script>
+
+var adress = "http://192.168.0.181:6969"
+// var adress = "http://{@HOST}:{@PORT}"
+
+</script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,6 +17,7 @@
     <title>Stream Overlay - Currently Playing</title>
     <script src="https://unpkg.com/color.js@1.2.0/dist/color.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body id="body">
 
@@ -22,6 +30,10 @@
             <div class="vertical-center">
                 <div class="left">
                     <div style="padding-top: 20px;">
+                        <div class="nowplaying">
+                            <span id="nowplaying"></span>
+                        </div>
+
                         <div class="name">
                             <span id="name"></span>
                         </div>
@@ -47,16 +59,16 @@ var isPaused;
 var timeout = 0
 
 async function updateCurrentlyPlaying() {
-    const response = await fetch("http://localhost:6969/api/spotify/currentSong")
+    const response = await fetch( adress +"/api/spotify/currentSong")
         .then((response) => response.json())
         .then((data) => {
             console.log(data)
             var name = data.name
-            if (name.length > 15) {
-                name = name.slice(0, 15) + "..";
+            if (name.length > 20) {
+                name = name.slice(0, 20) + "..";
             }
-            
-            if(data.artist.length > 20) {
+
+            if(data.artist.length > 30) {
                 document.getElementById("artist").classList.add("artist-multiline")
             } else {
                 document.getElementById("artist").classList.remove("artist-multiline")
@@ -117,6 +129,8 @@ function songChangeAnimation() {
     document.getElementById("artist").classList.remove("fade-out-in")
     document.getElementById("cover").classList.remove("fade-out-in")
     setTimeout(() => {
+        document.getElementById("nowplaying").innerHTML = "<i class=\"fa fa-volume-up\"></i> Now Playing"
+        document.getElementById("nowplaying").classList.add("fade-in")
         document.getElementById("name").classList.add("type-out-in")
         document.getElementById("artist").classList.add("fade-out-in")
         document.getElementById("cover").classList.add("fade-out-in")
@@ -145,7 +159,7 @@ updateCurrentlyPlaying()
 updateCurrectTask()
 
 async function updateCurrectTask() {
-    const response = await fetch("http://localhost:6969/task")
+    const response = await fetch(adress +"/task")
         .then((response) => response.text())
         .then((data) => {
             if(data == "") {
@@ -181,7 +195,7 @@ async function updateCurrectTask() {
             padding-top: 11%;
         }
     }
-    
+
     @keyframes up {
          0% {
             padding-top: 11%;
@@ -199,7 +213,7 @@ async function updateCurrectTask() {
         position: absolute;
         font-size: 24px;
      }
-    
+
      body {
          padding: 0px;
          margin: 0px;
@@ -215,20 +229,23 @@ async function updateCurrectTask() {
          position: absolute;
          width: 608px;
          height: 150px;
-         background: rgba(255, 255, 255, 0.795);
+         background: rgba(17, 17, 27, 1);
          border-radius: 20px 20px 20px 20px;
          flex-direction: row;
+         border: 2px solid #45475a;
     }
      .name {
-         width: 460px;
-         height: 52px;
-         font-family: 'JetBrains Mono';
-         font-style: normal;
-         font-weight: 700;
-         font-size: 40px;
-         line-height: 52px;
-         display: flex;
-         align-items: center;
+        width: 460px;
+        height: 52px;
+        font-family: 'JetBrains Mono';
+        font-style: normal;
+        font-weight: 700;
+        font-size: 32px;
+        line-height: 52px;
+        display: flex;
+        padding-top: 20px;
+        align-items: center;
+        color: rgb(205, 214, 244);
     }
      .right-img{
          width: 120px;
@@ -237,15 +254,25 @@ async function updateCurrectTask() {
      .artist {
          position: absolute;
          width: 460px;
-         height: 41px;
+         height: 11px;
          font-family: 'JetBrains Mono';
          font-style: italic;
          font-weight: 200;
-         font-size: 32px;
+         font-size: 24px;
          line-height: 42px;
          display: flex;
          align-items: center;
-         color: #000000;
+         color: rgb(205, 214, 244);
+    }
+    .nowplaying {
+        position: absolute;
+        font-family: 'JetBrains Mono';
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        color: #cba6f7;
+        margin-top: -10px;
+        padding-left: 2px;
     }
 
     .artist-multiline {
@@ -264,7 +291,7 @@ async function updateCurrectTask() {
          padding-left: 15px;
     }
      .right{
-         margin-top: -65px;
+         margin-top: -89px;
          margin-right: -115px;
     }
      .slide-right {
@@ -283,6 +310,26 @@ async function updateCurrectTask() {
          -webkit-animation: fade-out-in 2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
          animation: fade-out-in 2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
     }
+    .fade-in {
+         -webkit-animation: fade-in 2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: fade-in 2s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+
+    @keyframes fade-in {
+         0% {
+             opacity: 0;
+        }
+         50% {
+             opacity: 0;
+        }
+         65% {
+             opacity: 0;
+        }
+         100% {
+             opacity: 1;
+        }
+    }
+
     /* pausedd because paused is css keyword and it fucks it up */
     .pausedd {
          -webkit-animation: pausedd 0.5s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;

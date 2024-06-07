@@ -1,3 +1,10 @@
+<script>
+
+var adress = "http://192.168.0.181:6969"
+// var adress = "http://{@HOST}:{@PORT}"
+
+</script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,12 +14,17 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
     <div id="container" class="hideStart">
         <div class="background" id="background">
-            <div class="vertical-center">
-                <p><span class="bold">Working on:</span> <span id="task"></span></p>
+            <div class="currenttask">
+                <span id="currenttask"><i class="fa fa-book"></i> Currently Working On</span>
+            </div>
+
+            <div class="task">
+                <p><span id="task"></span></p>
             </div>
         </div>
     </div>
@@ -25,7 +37,7 @@
 var CONTAINER = document.getElementById("container")
 
 async function updateCurrectTask() {
-    const response = await fetch("http://localhost:6969/task")
+    const response = await fetch(adress +"/task")
         .then((response) => response.text())
         .then((data) => {
             console.log(data)
@@ -57,17 +69,56 @@ updateCurrectTask()
 
 <style>
 
-.slide-right {
-     -webkit-animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-     animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+.task {
+    text-align: left;
+    padding-left: 15px;
+    padding-top: 15px;
 }
-.slide-left {
-     -webkit-animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-     animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+
+.currenttask {
+    position: absolute;
+    font-family: 'JetBrains Mono';
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    color: rgb(166, 227, 161);
+    padding-left: 15px;
+    padding-top: 15px;
 }
+
 
 .hideStart {
     opacity: 0;
+}
+
+.bold {
+    font-weight: 800;
+}
+
+body {
+    font-family: 'JetBrains Mono';
+    font-style: normal;
+    font-size: 24px;
+    color: rgb(205, 214, 244);
+}
+
+.background {
+    position: absolute;
+    width: 600px;
+    height: 85px;
+    background: rgba(17, 17, 27, 1);
+    border-radius: 10px;
+    border: 2px solid #45475a;
+}
+
+
+
+.vertical-center {
+    margin: 0;
+    top: 50%;
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    padding-top: 28px;
 }
 
 @keyframes slide-right {
@@ -95,34 +146,13 @@ updateCurrectTask()
     }
 }
 
-.bold {
-    font-weight: 800;
+.slide-right {
+     -webkit-animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+     animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 }
-
-body {
-    padding: 0px;
-    margin: 0px;
-    font-family: 'JetBrains Mono';
-    font-style: normal;
-    font-size: 24px;
-    color: black;
-}
-
-.background {
-    position: absolute;
-    width: 600px;
-    height: 50px;
-    background: rgba(255, 255, 255, 0.795);
-    border-radius: 15px;
-    text-align: center;
-}
-
-.vertical-center {
-    margin: 0;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-    padding-top: 28px;
+.slide-left {
+     -webkit-animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+     animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
 }
 
 </style>

@@ -1,128 +1,158 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task display</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
-</head>
-<body>
-    <div id="container" class="hideStart">
-        <div class="background" id="background">
-            <div class="vertical-center">
-                <p><span class="bold">Working on:</span> <span id="task"></span></p>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
-
 <script>
 
-
-var CONTAINER = document.getElementById("container")
-
-async function updateCurrectTask() {
-    const response = await fetch("http://{@HOST}:{@PORT}/task")
-        .then((response) => response.text())
-        .then((data) => {
-            console.log(data)
-            if(data == "") {
-                //Hide the widget
+    // var adress = "http://192.168.0.181:6969"
+    var adress = "http://{@HOST}:{@PORT}"
+    
+    </script>
+    
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Task display</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    </head>
+    <body>
+        <div id="container" class="hideStart">
+            <div class="background" id="background">
+                <div class="currenttask">
+                    <span id="currenttask"><i class="fa fa-book"></i> Currently Working On</span>
+                </div>
+    
+                <div class="task">
+                    <p><span id="task"></span></p>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
+    <script>
+    
+    
+    var CONTAINER = document.getElementById("container")
+    
+    async function updateCurrectTask() {
+        const response = await fetch(adress +"/task")
+            .then((response) => response.text())
+            .then((data) => {
+                console.log(data)
+                if(data == "") {
+                    //Hide the widget
+                    CONTAINER.classList.remove("slide-left")
+                    CONTAINER.classList.add("slide-right")
+                } else {
+                    document.getElementById("task").innerHTML = data
+                    CONTAINER.classList.remove("slide-right")
+                    CONTAINER.classList.add("slide-left")
+                    CONTAINER.classList.remove("hideStart")
+                }
+            })
+            .catch(() => {
                 CONTAINER.classList.remove("slide-left")
                 CONTAINER.classList.add("slide-right")
-            } else {
-                document.getElementById("task").innerHTML = data
-                CONTAINER.classList.remove("slide-right")
-                CONTAINER.classList.add("slide-left")
-                CONTAINER.classList.remove("hideStart")
-            }
-        })
-        .catch(() => {
-            CONTAINER.classList.remove("slide-left")
-            CONTAINER.classList.add("slide-right")
-        })
-}
-
-setInterval(function() {
+            })
+    }
+    
+    setInterval(function() {
+        updateCurrectTask()
+    }, 1000);
+    
     updateCurrectTask()
-}, 1000);
-
-updateCurrectTask()
-
-</script>
-
-
-<style>
-
-.slide-right {
-     -webkit-animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-     animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-}
-.slide-left {
-     -webkit-animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-     animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
-}
-
-.hideStart {
-    opacity: 0;
-}
-
-@keyframes slide-right {
-     0% {
-         -webkit-transform: translateX(0);
-         transform: translateX(0);
-         opacity: 1;
+    
+    </script>
+    
+    
+    <style>
+    
+    .task {
+        text-align: left;
+        padding-left: 15px;
+        padding-top: 15px;
     }
-     100% {
-         -webkit-transform: translateX(500px);
-         transform: translateX(500px);
-         opacity: 0;
+    
+    .currenttask {
+        position: absolute;
+        font-family: 'JetBrains Mono';
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        color: rgb(166, 227, 161);
+        padding-left: 15px;
+        padding-top: 15px;
     }
-}
-@keyframes slide-left {
-     0% {
-         -webkit-transform: translateX(500px);
-         transform: translateX(500px);
-         opacity: 0;
+    
+    
+    .hideStart {
+        opacity: 0;
     }
-     100% {
-         -webkit-transform: translateX(0px);
-         transform: translateX(0px);
-         opacity: 1;
+    
+    .bold {
+        font-weight: 800;
     }
-}
-
-.bold {
-    font-weight: 800;
-}
-
-body {
-    padding: 0px;
-    margin: 0px;
-    font-family: 'JetBrains Mono';
-    font-style: normal;
-    font-size: 24px;
-    color: black;
-}
-
-.background {
-    position: absolute;
-    width: 600px;
-    height: 50px;
-    background: rgba(255, 255, 255, 0.795);
-    border-radius: 15px;
-    text-align: center;
-}
-
-.vertical-center {
-    margin: 0;
-    top: 50%;
-    -ms-transform: translateY(-50%);
-    transform: translateY(-50%);
-    padding-top: 28px;
-}
-
-</style>
+    
+    body {
+        font-family: 'JetBrains Mono';
+        font-style: normal;
+        font-size: 24px;
+        color: rgb(205, 214, 244);
+    }
+    
+    .background {
+        position: absolute;
+        width: 600px;
+        height: 85px;
+        background: rgba(17, 17, 27, 1);
+        border-radius: 10px;
+        border: 1px solid #45475a;
+    }
+    
+    
+    
+    .vertical-center {
+        margin: 0;
+        top: 50%;
+        -ms-transform: translateY(-50%);
+        transform: translateY(-50%);
+        padding-top: 28px;
+    }
+    
+    @keyframes slide-right {
+         0% {
+             -webkit-transform: translateX(0);
+             transform: translateX(0);
+             opacity: 1;
+        }
+         100% {
+             -webkit-transform: translateX(500px);
+             transform: translateX(500px);
+             opacity: 0;
+        }
+    }
+    @keyframes slide-left {
+         0% {
+             -webkit-transform: translateX(500px);
+             transform: translateX(500px);
+             opacity: 0;
+        }
+         100% {
+             -webkit-transform: translateX(0px);
+             transform: translateX(0px);
+             opacity: 1;
+        }
+    }
+    
+    .slide-right {
+         -webkit-animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: slide-right 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+    .slide-left {
+         -webkit-animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+         animation: slide-left 1s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+    }
+    
+    </style>

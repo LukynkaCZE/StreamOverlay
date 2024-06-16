@@ -1,8 +1,8 @@
 package util
 
-import LogType
+import cz.lukynka.prettylog.LogType
+import cz.lukynka.prettylog.log
 import io.github.cdimascio.dotenv.dotenv
-import log
 
 object Environment {
     private val dotenv = dotenv()

@@ -1,7 +1,7 @@
 package cz.lukynka.spotify
 
-import LogType
-import log
+import cz.lukynka.prettylog.LogType
+import cz.lukynka.prettylog.log
 import se.michaelthelin.spotify.SpotifyApi
 import se.michaelthelin.spotify.SpotifyHttpManager
 import se.michaelthelin.spotify.enums.AuthorizationScope

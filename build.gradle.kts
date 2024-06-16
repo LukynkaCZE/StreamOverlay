@@ -22,10 +22,14 @@ application {
 repositories {
     mavenCentral()
     maven("https://jitpack.io")
+    maven {
+        name = "devOS"
+        url = uri("https://mvn.devos.one/releases")
+    }
 }
 
 dependencies {
-    implementation(files("E:/Coding/Kotlin/libs/PrettyLog-1.1.jar"))
+    implementation("cz.lukynka:pretty-log:1.4")
     implementation("se.michaelthelin.spotify:spotify-web-api-java:8.3.4")
     implementation("com.github.jitpack:gradle-simple:1.1")
     implementation("io.ktor:ktor-server-core-jvm")

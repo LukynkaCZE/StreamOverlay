@@ -1,12 +1,12 @@
 package cz.lukynka.routing
 
-import LogType
 import cz.lukynka.HTML
 import cz.lukynka.Task
+import cz.lukynka.prettylog.LogType
+import cz.lukynka.prettylog.log
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import log
 import util.Environment
 import util.HTMLReplacer
 import util.respondHTML

@@ -1,14 +1,14 @@
 package cz.lukynka.routing
 
-import LogType
 import cz.lukynka.HTML
+import cz.lukynka.prettylog.LogType
+import cz.lukynka.prettylog.log
 import cz.lukynka.spotify.SpotifyAuth
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.serialization.Serializable
-import log
 import se.michaelthelin.spotify.model_objects.specification.Track
 import util.Environment
 import util.HTMLReplacer

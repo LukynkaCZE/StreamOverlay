@@ -1,9 +1,9 @@
 package util
 
+import cz.lukynka.prettylog.log
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
-import log
 
 fun getResourceAsText(path: String): String {
     return try {

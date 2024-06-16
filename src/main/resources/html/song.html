@@ -5,6 +5,7 @@
 
     // var adress = "http://192.168.0.181:6969"
     var adress = "http://{@HOST}:{@PORT}"
+    // var adress = "http://localhost:6969"
     
     </script>
     
@@ -25,6 +26,7 @@
         <p class="pausedIcon">PAUSED</p>
     </div>
     <div id="movedown">
+        <img id="miku" class="miku" src="http://{@HOST}:{@PORT}/miku" width="300px">
         <div id="container">
             <div class="background" id="background">
                 <div class="vertical-center">
@@ -49,6 +51,46 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .miku {
+            margin-top: -300px;
+            
+        }
+
+        .miku-peek {
+            -webkit-animation: miku-peek 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
+             animation: miku-peek 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
+        }
+    
+        .miku-invisible {
+            -webkit-animation: miku-invisible 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
+             animation: miku-invisible 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
+        }
+    
+        @keyframes miku-peek {
+             0% {
+                padding-right: 0%;
+            }
+             100% {
+                padding-right: 18%;
+            }
+        }
+
+            
+        @keyframes miku-invisible {
+             0% {
+                padding-right: 18%;
+            }
+             100% {
+                padding-right: 0%;
+            }
+        }
+
+        html {
+            margin-top: 300px;
+        }
+    </style>
     
     </body>
     </html>
@@ -67,7 +109,23 @@
                 if (name.length > 20) {
                     name = name.slice(0, 20) + "..";
                 }
+
+                var isMiku = false
+                var mikuArtists = ["livetune", "Nashimoto Ui", "b1vor", "wowaka", "DECO*27", "PinocchioP"]
+
+                if(data.name.toLowerCase().includes("miku")) isMiku = true
+                if(mikuArtists.includes(data.artist)) isMiku = true
+                
+
     
+                if(isMiku) {
+                    document.getElementById("miku").classList.remove("miku-invisible")        
+                    document.getElementById("miku").classList.add("miku-peek")        
+                } else {
+                    document.getElementById("miku").classList.add("miku-invisible")        
+                    document.getElementById("miku").classList.remove("miku-peek")        
+                }
+
                 if(data.artist.length > 30) {
                     document.getElementById("artist").classList.add("artist-multiline")
                 } else {
@@ -176,7 +234,10 @@
     </script>
     
     <style>
-    
+        .container {
+            margin-top: 500px;
+        }
+
         .down {
             -webkit-animation: down 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
              animation: down 2s cubic-bezier(0.165, 0.840, 0.440, 1.000) both;
@@ -230,7 +291,7 @@
              width: 608px;
              height: 150px;
              background: rgba(17, 17, 27, 1);
-             border-radius: 12px 12px 12px 12px;
+             border-radius: 15px 15px 15px 15px;
              flex-direction: row;
              border: 1px solid #45475a;
         }

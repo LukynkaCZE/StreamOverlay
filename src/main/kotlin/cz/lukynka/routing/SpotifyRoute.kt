@@ -23,11 +23,19 @@ fun Route.spotifyRoute() {
         call.respondHTML(HTML.AUTO_CLOSE)
     }
 
+    get("/spotify/unknownimage") {
+        call.respondBytes(object {}.javaClass.getResource("/unknown.jpg")!!.readBytes())
+    }
+
     get("/spotify/otographic") {
         val bool = (call.request.queryParameters["enabled"] ?: "false").toBoolean()
         isOtographic = bool
         call.response.status(HttpStatusCode.OK)
         call.respond("")
+    }
+
+    get("/miku") {
+        call.respondBytes(object {}.javaClass.getResource("/miku.png")!!.readBytes())
     }
 
     get("/api/spotify/currentSong") {
@@ -56,9 +64,12 @@ fun Route.spotifyRoute() {
             val currentlyPlaying = SpotifyAuth.spotifyApi.usersCurrentlyPlayingTrack.build().execute()
             val track = currentlyPlaying.item as Track
 
+            val artistName = if(track.artists.isNotEmpty()) track.artists[0].name else ""
+            val imageURL = if(track.album.images.isNotEmpty()) track.album.images[0].url else "http://${Environment.HOST}:${Environment.PORT}/spotify/unknownimage"
+
             name = track.name
-            artist = track.artists[0].name
-            image = track.album.images[0].url
+            artist = artistName
+            image = imageURL
             isPaused = !currentlyPlaying.is_playing
             currentMs = currentlyPlaying.progress_ms
             maxMs = currentlyPlaying.item.durationMs
@@ -66,6 +77,7 @@ fun Route.spotifyRoute() {
         } catch (err: Exception) {
             if(err.message?.contains("because \"currentlyPlaying\" is null") == false) {
                 log("Error occurred while fetching currently playing song: $err", LogType.ERROR)
+                log(err)
             }
             call.respond(CurrentSongResponse("", "", "", isPaused = false, isEmpty = true, 0, 0))
         }
